@@ -478,7 +478,8 @@
                       SelectionMode="Single"
                       IsItemClickEnabled="True"
                       IsSwipeEnabled="False"
-                      CanDragItems="False">
+                      CanDragItems="False"
+                      ItemClick="ListAllTracking_ItemClick">
                 <ListView.ItemTemplate>
                     <DataTemplate>
                         <Border BorderThickness="0,0,0,1" BorderBrush="#d6d5d5" VerticalAlignment="Bottom">
@@ -516,7 +517,7 @@
         </Grid>
         
         <!--Slider-->
-        <Grid Grid.Row="2">
+        <Grid Grid.Row="2" VerticalAlignment="Bottom">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="10"/>
                 <ColumnDefinition Width="60"/>
@@ -560,7 +561,7 @@
             <StackPanel Orientation="Horizontal" Grid.Column="0">
                 <Image x:Name="imgThumbailSongs" Source="/Assets/Images/Icons/pop.jpg" Height="48" Width="50" VerticalAlignment="Center" HorizontalAlignment="Left" Margin="5,0"></Image>
                 <StackPanel VerticalAlignment="Center">
-                    <TextBlock x:Name="txtCurrentTrack" Text="Hold me for a while" HorizontalAlignment="Left" Foreground="#333333" FontSize="13" Margin="5,0" FontWeight="SemiBold"/>
+                    <TextBlock x:Name="txtCurrentTrack" TextTrimming="CharacterEllipsis" Text="Hold me for a while" HorizontalAlignment="Left" Foreground="#333333" FontSize="13" Margin="5,0" FontWeight="SemiBold"/>
                     <TextBlock x:Name="txtAlbum" Text="SD 199" HorizontalAlignment="Left" Foreground="#B9B9B9" FontSize="9" Margin="5,0"/>
                 </StackPanel>
             </StackPanel>

@@ -366,15 +366,32 @@ namespace BackgroundAudioTask
             UpdateUVCOnNewTrack(item);
 
             // Get the current track
-            Uri currentTrackId = null;
+            //Uri currentTrackId = null;
+            //if (item != null)
+            //    currentTrackId = item.Source.CustomProperties[TrackIdKey] as Uri;
+
+            //// Notify foreground of change or persist for later
+            //if (foregroundAppState == AppState.Active)
+            //    MessageService.SendMessageToForeground(new TrackChangedMessage(currentTrackId));
+            //else
+            //    ApplicationSettingsHelper.SaveSettingsValue(TrackIdKey, currentTrackId == null ? null : currentTrackId.ToString());
+
+            string currentTrackId = null;
             if (item != null)
-                currentTrackId = item.Source.CustomProperties[TrackIdKey] as Uri;
+                currentTrackId = item.Source.CustomProperties[TrackIdKey] as string;
 
             // Notify foreground of change or persist for later
             if (foregroundAppState == AppState.Active)
-                MessageService.SendMessageToForeground(new TrackChangedMessage(currentTrackId));
+            {
+                if (currentTrackId != null)
+                {
+                    MessageService.SendMessageToForeground(new TrackChangedMessage(new Uri(currentTrackId)));
+                }
+            }
             else
+            {
                 ApplicationSettingsHelper.SaveSettingsValue(TrackIdKey, currentTrackId == null ? null : currentTrackId.ToString());
+            }
         }
 
         /// <summary>

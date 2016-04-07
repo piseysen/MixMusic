@@ -15,6 +15,7 @@ using Windows.Media.Playback;
 using Windows.UI.Core;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
+using Windows.UI.Xaml.Media.Imaging;
 using Windows.UI.Xaml.Navigation;
 
 namespace MixMusic.Views
@@ -31,20 +32,24 @@ namespace MixMusic.Views
         public PlayingNowPage()
         {
             this.InitializeComponent();
-            backgroundAudioTaskStarted = new AutoResetEvent(false);
             NavigationCacheMode = NavigationCacheMode.Required;
             ListAllTrackItems = new ObservableCollection<MusicModel.Result>();
 
             MediaTimer = new DispatcherTimer();
             MediaTimer.Interval = TimeSpan.FromMilliseconds(200);
             MediaTimer.Tick += MediaTimer_Tick;
+            backgroundAudioTaskStarted = new AutoResetEvent(false);
         }
 
         #region Navigation
 
         protected override void OnNavigatedTo(NavigationEventArgs e)
         {
-            base.OnNavigatedTo(e);
+            //base.OnNavigatedTo(e);
+            Application.Current.Suspending += ForegroundApp_Suspending;
+            Application.Current.Resuming += ForegroundApp_Resuming;
+            ApplicationSettingsHelper.SaveSettingsValue(ApplicationSettingsConstants.AppState, AppState.Active.ToString());
+
             if (e.Parameter != null)
             {
                 var data = e.Parameter as SongNavigationModel;
@@ -60,6 +65,18 @@ namespace MixMusic.Views
 
                 }
             }
+        }
+
+
+        protected override void OnNavigatedFrom(NavigationEventArgs e)
+        {
+            if (_isMyBackgroundTaskRunning)
+            {
+                RemoveMediaPlayerEventHandlers();
+                ApplicationSettingsHelper.SaveSettingsValue(ApplicationSettingsConstants.BackgroundTaskState, BackgroundTaskState.Running.ToString());
+            }
+
+            base.OnNavigatedFrom(e);
         }
 
         #endregion
@@ -79,6 +96,9 @@ namespace MixMusic.Views
 
                 // Start task
                 StartBackgroundAudioTask();
+
+                //var songIndex = data.SongCollection.ToList().FindIndex(x => x.music_path == data.TrackId);
+                //ListAllTracking.SelectedIndex = songIndex;
             }
             else
             {
@@ -219,16 +239,6 @@ namespace MixMusic.Views
         /// <param name="e">Event data that describes how this page was reached.
         /// This parameter is typically used to configure the page.</param>
 
-        protected override void OnNavigatedFrom(NavigationEventArgs e)
-        {
-            if (_isMyBackgroundTaskRunning)
-            {
-                RemoveMediaPlayerEventHandlers();
-                ApplicationSettingsHelper.SaveSettingsValue(ApplicationSettingsConstants.BackgroundTaskState, BackgroundTaskState.Running.ToString());
-            }
-
-            base.OnNavigatedFrom(e);
-        }
 
         #region Foreground App Lifecycle Handlers
         /// <summary>
@@ -300,6 +310,7 @@ namespace MixMusic.Views
 
             deferral.Complete();
         }
+
         #endregion
 
         #region Background MediaPlayer Event handlers
@@ -336,29 +347,31 @@ namespace MixMusic.Views
                     // If playback stopped then clear the UI
                     if (trackChangedMessage.TrackId == null)
                     {
-                        //playlistView.SelectedIndex = -1;
-                        //albumArt.Source = null;
-                        //txtCurrentTrack.Text = string.Empty;
-                        //AppBarPrevButton.IsEnabled = false;
-                        //AppBarNextButton.IsEnabled = false;
+                        ListAllTracking.SelectedIndex = -1;
+                        imgThumbailSongs.Source = null;
+                        txtCurrentTrack.Text = string.Empty;
+                        txtAlbum.Text = string.Empty;
+                        BtnPreviousSongs.IsEnabled = false;
+                        BtnNextSongs.IsEnabled = false;
                         return;
                     }
 
-                    //var songIndex = playlistView.GetSongIndexById(trackChangedMessage.TrackId);
-                    //var song = playlistView.Songs[songIndex];
+                    var songIndex = currentData.SongCollection.ToList().FindIndex(x=>x.music_path== trackChangedMessage.TrackId.AbsoluteUri);
+                    var song = currentData.SongCollection[songIndex];
 
                     // Update list UI
-                    //playlistView.SelectedIndex = songIndex;
+                    ListAllTracking.SelectedIndex = songIndex;
 
                     // Update the album art
-                    //albumArt.Source = albumArtCache[song.AlbumArtUri.ToString()];
+                    imgThumbailSongs.Source =new BitmapImage(new Uri(song.image_album));
 
                     // Update song title
-                    // txtCurrentTrack.Text = song.Title;
+                    txtCurrentTrack.Text = song.music_title;
+                    txtAlbum.Text = song.albums;
 
                     // Ensure track buttons are re-enabled since they are disabled when pressed
-                    //AppBarPrevButton.IsEnabled = true;
-                    //AppBarNextButton.IsEnabled = true;
+                    BtnPreviousSongs.IsEnabled =true;
+                    BtnNextSongs.IsEnabled = true;
                 });
                 return;
             }
@@ -385,7 +398,8 @@ namespace MixMusic.Views
         /// </summary>
         private void PrevButton_Click(object sender, RoutedEventArgs e)
         {
-            MessageService.SendMessageToBackground(new SkipPreviousMessage());
+            if(ListAllTracking.SelectedIndex!=-1 || ListAllTracking.SelectedIndex != 0)
+                MessageService.SendMessageToBackground(new SkipPreviousMessage());
 
             // Prevent the user from repeatedly pressing the button and causing 
             // a backlong of button presses to be handled. This button is re-eneabled 
@@ -445,13 +459,11 @@ namespace MixMusic.Views
         {
             if (state == MediaPlayerState.Playing)
             {
-                //AppBarPauseButton.Visibility = Visibility.Visible;
-                //AppBarPlayButton.Visibility = Visibility.Collapsed; // Change to pause button
+                playIcon.Symbol =Symbol.Pause; // Change to pause button
             }
             else
             {
-                //AppBarPauseButton.Visibility = Visibility.Collapsed;
-                //AppBarPlayButton.Visibility = Visibility.Visible;   // Change to play button
+                playIcon.Symbol = Symbol.Play;  // Change to play button
             }
         }
 
@@ -567,5 +579,34 @@ namespace MixMusic.Views
 
         #endregion
 
+        private void ListAllTracking_ItemClick(object sender, ItemClickEventArgs e)
+        {
+            var data = e.ClickedItem as MusicModel.Result;
+            if (data != null)
+            {
+                Debug.WriteLine("Clicked item from App: " + data.music_path);
+
+                // Start the background task if it wasn't running
+                if (!IsMyBackgroundTaskRunning || MediaPlayerState.Closed == CurrentPlayer.CurrentState)
+                {
+                    // First update the persisted start track
+                    ApplicationSettingsHelper.SaveSettingsValue(ApplicationSettingsConstants.TrackId, data.music_path);
+                    ApplicationSettingsHelper.SaveSettingsValue(ApplicationSettingsConstants.Position,new TimeSpan().ToString());
+
+                    // Start task
+                    StartBackgroundAudioTask();
+                }
+                else
+                {
+                    // Switch to the selected track
+                    MessageService.SendMessageToBackground(new TrackChangedMessage(new Uri(data.music_path)));
+                }
+
+                if (MediaPlayerState.Paused == CurrentPlayer.CurrentState)
+                {
+                    CurrentPlayer.Play();
+                }
+            }
+        }
     }
 }

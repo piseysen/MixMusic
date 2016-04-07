@@ -12,11 +12,24 @@ namespace BackgroundAudioShared.Models
         public class Result
         {
             private string _image_thumb;
+            private string _image_album;
 
             public string id { get; set; }
             public string music_title { get; set; }
             public string music_path { get; set; }
-            public string image_album { get; set; }
+
+            public string image_album
+            {
+                get { return _image_album; }
+                set
+                {
+                    if (!string.IsNullOrEmpty(value))
+                        _image_album = value;
+                    else
+                        _image_album = Utils.defaultCoverImage;
+                }
+            }
+
             public string image_thumb
             {
                 get { return _image_thumb; }
