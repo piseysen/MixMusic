@@ -10,6 +10,79 @@
     DataContext="{Binding RelativeSource={RelativeSource Mode=Self}}">
 
     <Page.Resources>
+
+        <!--Slider-->
+        <Style x:Key="CircleSlider" TargetType="Slider">
+            <Setter Property="Background" Value="Black"/>
+            <Setter Property="BorderBrush" Value="White"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="Foreground" Value="ForestGreen"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Slider">
+                        <Grid Margin="0">
+                            <Grid.Resources>
+                                <Style x:Key="SliderThumbStyle" TargetType="Thumb">
+                                    <Setter Property="BorderThickness" Value="1"/>
+                                    <Setter Property="BorderBrush" Value="White"/>
+                                    <Setter Property="Foreground" Value="ForestGreen"/>
+                                    <Setter Property="Template">
+                                        <Setter.Value>
+                                            <ControlTemplate TargetType="Thumb">
+                                                <Ellipse StrokeThickness="2" Stroke="{TemplateBinding BorderBrush}" Fill="{TemplateBinding Foreground}"/>
+                                            </ControlTemplate>
+                                        </Setter.Value>
+                                    </Setter>
+                                </Style>
+                            </Grid.Resources>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="*"/>
+                            </Grid.RowDefinitions>
+                            <Grid x:Name="SliderContainer" Background="Transparent" Grid.Row="1">
+                                <Grid x:Name="HorizontalTemplate">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="Auto"/>
+                                        <ColumnDefinition Width="Auto"/>
+                                        <ColumnDefinition Width="*"/>
+                                    </Grid.ColumnDefinitions>
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition Height="17"/>
+                                        <RowDefinition Height="Auto"/>
+                                        <RowDefinition Height="17"/>
+                                    </Grid.RowDefinitions>
+                                    <Rectangle x:Name="HorizontalTrackRect" Grid.ColumnSpan="3" Fill="{TemplateBinding Background}" Grid.Row="1" Height="3" RadiusX="5" RadiusY="5"/>
+                                    <Rectangle x:Name="HorizontalDecreaseRect" Fill="{TemplateBinding Background}" Grid.Row="1" Height="3" RadiusX="5" RadiusY="5"/>
+                                    <Rectangle x:Name="HorizontalBorder" Grid.ColumnSpan="3" Grid.Row="1" Stroke="{TemplateBinding BorderBrush}"
+                            StrokeThickness="{TemplateBinding BorderThickness}" Height="3" RadiusX="5" RadiusY="5"/>
+                                    <Thumb x:Name="HorizontalThumb" AutomationProperties.AccessibilityView="Raw" Background="{ThemeResource SliderThumbBackgroundThemeBrush}"
+                            Grid.Column="1" DataContext="{TemplateBinding Value}" Grid.Row="1" Style="{StaticResource SliderThumbStyle}" Height="18" Width="18"/>
+                                </Grid>
+                                <Grid x:Name="VerticalTemplate" Visibility="Collapsed">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="17"/>
+                                        <ColumnDefinition Width="Auto"/>
+                                        <ColumnDefinition Width="17"/>
+                                    </Grid.ColumnDefinitions>
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition Height="*"/>
+                                        <RowDefinition Height="Auto"/>
+                                        <RowDefinition Height="Auto"/>
+                                    </Grid.RowDefinitions>
+                                    <Rectangle x:Name="VerticalTrackRect" Grid.Column="1" Fill="{TemplateBinding Background}" Grid.RowSpan="3" Width="10" RadiusX="5" RadiusY="5"/>
+                                    <Rectangle x:Name="VerticalDecreaseRect" Grid.Column="1" Fill="{TemplateBinding Background}" Grid.Row="2"/>
+                                    <Rectangle x:Name="VerticalBorder" Grid.RowSpan="3" Grid.Column="1"  Stroke="{TemplateBinding BorderBrush}"
+                            StrokeThickness="{TemplateBinding BorderThickness}" Width="10" RadiusX="5" RadiusY="5" />
+                                    <Thumb x:Name="VerticalThumb" AutomationProperties.AccessibilityView="Raw" Background="{ThemeResource SliderThumbBackgroundThemeBrush}"
+                            Grid.Column="1" DataContext="{TemplateBinding Value}" Grid.Row="1" Style="{StaticResource SliderThumbStyle}" Height="18" Width="18"/>
+                                </Grid>
+                            </Grid>
+                        </Grid>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+        
         <Style TargetType="Button">
 
             <Setter Property="Background" Value="Transparent" />
@@ -386,6 +459,8 @@
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
 
         <controls:PageHeader x:Name="pageHeader">
@@ -397,66 +472,171 @@
 
         <!--Main-->
         <Grid Grid.Row="1">
-            <Pivot x:Name="PivotMainPlayNow" Style="{StaticResource MsPhoneAppPivotStyle}" HorizontalAlignment="Stretch" VerticalAlignment="Top">
-                <Pivot.HeaderTemplate>
+            <ListView Name="ListAllTracking" 
+                      Background="Transparent" 
+                      MaxHeight="600"
+                      SelectionMode="Single"
+                      IsItemClickEnabled="True"
+                      IsSwipeEnabled="False"
+                      CanDragItems="False">
+                <ListView.ItemTemplate>
                     <DataTemplate>
-                        <Grid>
-                            <TextBlock Foreground="Black" Text="{Binding}"/>
-                        </Grid>
+                        <Border BorderThickness="0,0,0,1" BorderBrush="#d6d5d5" VerticalAlignment="Bottom">
+                            <Grid Width="auto" HorizontalAlignment="Stretch">
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="auto"></RowDefinition>
+                                    <RowDefinition Height="auto"></RowDefinition>
+                                </Grid.RowDefinitions>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="auto"></ColumnDefinition>
+                                    <ColumnDefinition Width="*"></ColumnDefinition>
+                                    <ColumnDefinition Width="auto"></ColumnDefinition>
+                                </Grid.ColumnDefinitions>
+                                <StackPanel Grid.Column="0" Grid.Row="0">
+                                    <Image Source="/Assets/Images/Icons/radioicon.png" Width="20"></Image>
+                                </StackPanel>
+                                <StackPanel Margin="15,0,15,0" Grid.Column="1" Grid.Row="0" VerticalAlignment="Center" MinWidth="280" HorizontalAlignment="Stretch">
+                                    <TextBlock Text="{Binding music_title}" FontSize="14" FontFamily="Arial" FontWeight="Bold" Foreground="Black"></TextBlock>
+                                    <TextBlock Text="{Binding albums}"  FontSize="8" FontFamily="Arial" FontWeight="Bold" Foreground="#b6b5ab" Margin="0,5,0,8"></TextBlock>
+
+                                </StackPanel>
+                                <StackPanel Grid.Row="1" Grid.Column="1" Margin="8" Visibility="Collapsed">
+                                    <ProgressBar x:Name="processdownloand"></ProgressBar>
+                                </StackPanel>
+                                <StackPanel Margin="15,0,15,0" Grid.Row="0" Grid.Column="2" VerticalAlignment="Top" HorizontalAlignment="Left" Orientation="Horizontal">
+                                    <Image x:Name="download" Source="/Images/Icons/download-32.png" Width="25" Height="25"></Image>
+                                </StackPanel>
+
+
+                            </Grid>
+                        </Border>
                     </DataTemplate>
-                </Pivot.HeaderTemplate>
-                <!--Pivotitem1-->
-                <PivotItem Header="now playing" Margin="0,1,0,0">
-                    <StackPanel VerticalAlignment="Stretch" HorizontalAlignment="Stretch">
-                        <Image Margin="0,0,0,0" Source="/Assets/Images/Icons/pop.jpg" x:Name="Img_SongThumbnail" Stretch="Fill" HorizontalAlignment="Stretch" VerticalAlignment="Stretch"/>
-                    </StackPanel>
-                </PivotItem>
-                <!--Pivotitem2-->
-                <PivotItem Header="queue" Margin="0">
-                    <ListView Name="ListAllTracking" Background="Transparent">
-                        <ListView.ItemTemplate>
-                            <DataTemplate>
-                                <Border BorderThickness="0,0,0,1" BorderBrush="#d6d5d5" VerticalAlignment="Bottom">
-                                    <Grid Width="auto" HorizontalAlignment="Stretch">
-                                        <Grid.RowDefinitions>
-                                            <RowDefinition Height="auto"></RowDefinition>
-                                            <RowDefinition Height="auto"></RowDefinition>
-                                        </Grid.RowDefinitions>
-                                        <Grid.ColumnDefinitions>
-                                            <ColumnDefinition Width="auto"></ColumnDefinition>
-                                            <ColumnDefinition Width="*"></ColumnDefinition>
-                                            <ColumnDefinition Width="auto"></ColumnDefinition>
-                                        </Grid.ColumnDefinitions>
-                                        <StackPanel Grid.Column="0" Grid.Row="0">
-                                            <Image Source="/Assets/Images/Icons/radioicon.png" Width="20"></Image>
-                                        </StackPanel>
-                                        <StackPanel Margin="15,0,15,0" Grid.Column="1" Grid.Row="0" VerticalAlignment="Center" MinWidth="280" HorizontalAlignment="Stretch">
-                                            <TextBlock Text="{Binding music_title}" FontSize="14" FontFamily="Arial" FontWeight="Bold" Foreground="Black"></TextBlock>
-                                            <TextBlock Text="{Binding albums}"  FontSize="8" FontFamily="Arial" FontWeight="Bold" Foreground="#b6b5ab" Margin="0,5,0,8"></TextBlock>
+                </ListView.ItemTemplate>
+            </ListView>
+        </Grid>
+        
+        <!--Slider-->
+        <Grid Grid.Row="2">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="10"/>
+                <ColumnDefinition Width="60"/>
+                <ColumnDefinition Width="100*"/>
+                <ColumnDefinition Width="60"/>
+                <ColumnDefinition Width="10"/>
+            </Grid.ColumnDefinitions>
 
-                                        </StackPanel>
-                                        <StackPanel Grid.Row="1" Grid.Column="1" Margin="8" Visibility="Collapsed">
-                                            <ProgressBar x:Name="processdownloand"></ProgressBar>
-                                        </StackPanel>
-                                        <StackPanel Margin="15,0,15,0" Grid.Row="0" Grid.Column="2" VerticalAlignment="Top" HorizontalAlignment="Left" Orientation="Horizontal">
-                                            <Image x:Name="download" Source="/Images/Icons/download-32.png" Width="25" Height="25"></Image>
-                                        </StackPanel>
+            <Grid Grid.Column="1">
+                <TextBlock x:Name="StartDuraton" 
+                           HorizontalAlignment="Left"
+                           VerticalAlignment="Center"
+                           Foreground="Gray"/>
+            </Grid>
+
+            <Grid Grid.Column="2">
+                <Slider HorizontalAlignment="Stretch"
+                        x:Name="slideSeeker"
+                        Margin="8"
+                        VerticalAlignment="Center"
+                        Style="{StaticResource CircleSlider}" 
+                        />
+            </Grid>
+
+            <Grid Grid.Column="3">
+                <TextBlock x:Name="TotalDuraton"
+                           HorizontalAlignment="Left"
+                           VerticalAlignment="Center"
+                           Foreground="Gray"/>
+            </Grid>
+            
+        </Grid>
+        
+        <!--PlayerControl-->
+        <Grid Grid.Row="3" Background="#F2F2F2" VerticalAlignment="Bottom" Height="60">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*"></ColumnDefinition>
+                <ColumnDefinition Width="2*"></ColumnDefinition>
+            </Grid.ColumnDefinitions>
+
+            <StackPanel Orientation="Horizontal" Grid.Column="0">
+                <Image x:Name="imgThumbailSongs" Source="/Assets/Images/Icons/pop.jpg" Height="48" Width="50" VerticalAlignment="Center" HorizontalAlignment="Left" Margin="5,0"></Image>
+                <StackPanel VerticalAlignment="Center">
+                    <TextBlock x:Name="txtCurrentTrack" Text="Hold me for a while" HorizontalAlignment="Left" Foreground="#333333" FontSize="13" Margin="5,0" FontWeight="SemiBold"/>
+                    <TextBlock x:Name="txtAlbum" Text="SD 199" HorizontalAlignment="Left" Foreground="#B9B9B9" FontSize="9" Margin="5,0"/>
+                </StackPanel>
+            </StackPanel>
+
+            <StackPanel Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Center" HorizontalAlignment="Right" Padding="5,0" Margin="3,0">
+
+                <Button x:Name="BtnPreviousSongs" Background="Transparent" Margin="5" Click="PrevButton_Click">
+                    <SymbolIcon  Symbol="Previous" Foreground="#333333"  RenderTransformOrigin="0.5,0.5">
+                        <SymbolIcon.RenderTransform>
+                            <CompositeTransform ScaleX="0.9" ScaleY="0.9"></CompositeTransform>
+                        </SymbolIcon.RenderTransform>
+                    </SymbolIcon>
+
+                </Button>
+
+                <Button x:Name="BtnPlay" Background="Transparent" Margin="5" Click="PlayButton_Click">
+                    <SymbolIcon x:Name="playIcon" Symbol="Play"  Foreground="#333333" RenderTransformOrigin="0.5,0.5">
+                        <SymbolIcon.RenderTransform>
+                            <CompositeTransform ScaleX="0.9" ScaleY="0.9"></CompositeTransform>
+                        </SymbolIcon.RenderTransform>
+                    </SymbolIcon>
+
+                </Button>
 
 
-                                    </Grid>
-                                </Border>
-                            </DataTemplate>
-                        </ListView.ItemTemplate>
-                    </ListView>
-                </PivotItem>
+                <Button x:Name="BtnNextSongs" Background="Transparent" Margin="5" Click="NextButton_Click">
+                    <SymbolIcon  Symbol="Next" Foreground="#333333"  RenderTransformOrigin="0.5,0.5">
+                        <SymbolIcon.RenderTransform>
+                            <CompositeTransform ScaleX="0.9" ScaleY="0.9"></CompositeTransform>
+                        </SymbolIcon.RenderTransform>
+                    </SymbolIcon>
 
-            </Pivot>
+                </Button>
+
+
+                <Button x:Name="BtnShuffler" Background="Transparent" Margin="5">
+                    <SymbolIcon x:Name="shuffleIcon" Symbol="Shuffle"  Foreground="#B9B9B9" RenderTransformOrigin="0.5,0.5" >
+                        <SymbolIcon.RenderTransform>
+                            <CompositeTransform ScaleX="0.9" ScaleY="0.9"></CompositeTransform>
+                        </SymbolIcon.RenderTransform>
+                    </SymbolIcon>
+
+                </Button>
+
+
+
+                <Button x:Name="BtnRepeat" Background="Transparent" Margin="5">
+                    <SymbolIcon x:Name="repeatIcon" Symbol="RepeatAll" Foreground="#B9B9B9" RenderTransformOrigin="0.5,0.5">
+                        <SymbolIcon.RenderTransform>
+                            <CompositeTransform ScaleX="0.9" ScaleY="0.9"></CompositeTransform>
+                        </SymbolIcon.RenderTransform>
+                    </SymbolIcon>
+
+                </Button>
+
+
+
+                <Button x:Name="BtnDownload" Background="Transparent" Margin="5">
+                    <SymbolIcon Symbol="Download" Foreground="#333333" RenderTransformOrigin="0.5,0.5">
+                        <SymbolIcon.RenderTransform>
+                            <CompositeTransform ScaleX="0.9" ScaleY="0.9"></CompositeTransform>
+                        </SymbolIcon.RenderTransform>
+                    </SymbolIcon>
+
+                </Button>
+
+            </StackPanel>
+            <Border BorderThickness="0,0.2,0,0" Grid.ColumnSpan="2" BorderBrush="#333333" VerticalAlignment="Top"></Border>
+
         </Grid>
 
     </Grid>
 
-    <Page.BottomAppBar>
-        <CommandBar Background="Gray" Opacity="0.8">
+    <!--<Page.BottomAppBar>
+
+        <CommandBar Background="Gray" Opacity="0.8" Visibility="Collapsed">
             <AppBarButton x:Name="AppBarPrevButton" Icon="Previous" Label="Previous" Click="PrevButton_Click"/>
 
             <AppBarButton x:Name="AppBarPlayButton" Icon="Play" Label="Play" Click="PlayButton_Click"/>
@@ -466,5 +646,5 @@
             <AppBarButton x:Name="AppBarNextButton" Icon="Next" Label="Next" Click="NextButton_Click"/>
 
         </CommandBar>
-    </Page.BottomAppBar>
+    </Page.BottomAppBar>-->
 </Page>

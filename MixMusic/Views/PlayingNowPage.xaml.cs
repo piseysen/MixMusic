@@ -1,6 +1,7 @@
 ﻿using BackgroundAudioShared;
 using BackgroundAudioShared.Messages;
 using BackgroundAudioShared.Models;
+using MixMusic.Helpers;
 using MixMusic.Models;
 using System;
 using System.Collections.Generic;
@@ -25,13 +26,18 @@ namespace MixMusic.Views
     {
         private SongNavigationModel currentData;
         public ObservableCollection<MusicModel.Result> ListAllTrackItems { get; private set; }
-
+        private DispatcherTimer MediaTimer;
+        private bool isDragging = false;
         public PlayingNowPage()
         {
             this.InitializeComponent();
             backgroundAudioTaskStarted = new AutoResetEvent(false);
             NavigationCacheMode = NavigationCacheMode.Required;
             ListAllTrackItems = new ObservableCollection<MusicModel.Result>();
+
+            MediaTimer = new DispatcherTimer();
+            MediaTimer.Interval = TimeSpan.FromMilliseconds(200);
+            MediaTimer.Tick += MediaTimer_Tick;
         }
 
         #region Navigation
@@ -50,8 +56,8 @@ namespace MixMusic.Views
                     ListAllTrackItems.Clear();
                     ListAllTracking.ItemsSource = null;
                     ListAllTracking.DataContext = null;
-                    //ListAllTrackItems = currentData.SongCollection;
                     ListAllTracking.ItemsSource= currentData.SongCollection;
+
                 }
             }
         }
@@ -184,11 +190,11 @@ namespace MixMusic.Views
             BackgroundMediaPlayer.Shutdown();
             _isMyBackgroundTaskRunning = false;
             backgroundAudioTaskStarted.Reset();
-            AppBarPrevButton.IsEnabled = true;
-            AppBarNextButton.IsEnabled = true;
+            //AppBarPrevButton.IsEnabled = true;
+            //AppBarNextButton.IsEnabled = true;
             ApplicationSettingsHelper.SaveSettingsValue(ApplicationSettingsConstants.BackgroundTaskState, BackgroundTaskState.Unknown.ToString());
-            AppBarPlayButton.Visibility = Visibility.Visible;
-            AppBarPauseButton.Visibility = Visibility.Collapsed;
+            //AppBarPlayButton.Visibility = Visibility.Visible;
+            //AppBarPauseButton.Visibility = Visibility.Collapsed;
 
             try
             {
@@ -262,8 +268,8 @@ namespace MixMusic.Views
             }
             else
             {
-                AppBarPauseButton.Visibility = Visibility.Collapsed;
-                AppBarPlayButton.Visibility = Visibility.Visible;   // Change to play button
+                //AppBarPauseButton.Visibility = Visibility.Collapsed;
+                //AppBarPlayButton.Visibility = Visibility.Visible;   // Change to play button
                 //txtCurrentTrack.Text = string.Empty;
                 //txtCurrentState.Text = "Background Task Not Running";
             }
@@ -439,13 +445,13 @@ namespace MixMusic.Views
         {
             if (state == MediaPlayerState.Playing)
             {
-                AppBarPauseButton.Visibility = Visibility.Visible;
-                AppBarPlayButton.Visibility = Visibility.Collapsed; // Change to pause button
+                //AppBarPauseButton.Visibility = Visibility.Visible;
+                //AppBarPlayButton.Visibility = Visibility.Collapsed; // Change to pause button
             }
             else
             {
-                AppBarPauseButton.Visibility = Visibility.Collapsed;
-                AppBarPlayButton.Visibility = Visibility.Visible;   // Change to play button
+                //AppBarPauseButton.Visibility = Visibility.Collapsed;
+                //AppBarPlayButton.Visibility = Visibility.Visible;   // Change to play button
             }
         }
 
@@ -478,7 +484,8 @@ namespace MixMusic.Views
         private void AddMediaPlayerEventHandlers()
         {
             CurrentPlayer.CurrentStateChanged += this.MediaPlayer_CurrentStateChanged;
-
+            CurrentPlayer.MediaOpened += CurrentPlayer_MediaOpened;
+            MediaTimer.Start();
             try
             {
                 BackgroundMediaPlayer.MessageReceivedFromBackground += BackgroundMediaPlayer_MessageReceivedFromBackground;
@@ -494,6 +501,30 @@ namespace MixMusic.Views
                 {
                     throw;
                 }
+            }
+        }
+
+        private void CurrentPlayer_MediaOpened(MediaPlayer sender, object args)
+        {
+            CommonHelper.CallOnUiThreadAsync(() =>
+            {
+                TimeSpan ts = CurrentPlayer.NaturalDuration;
+                slideSeeker.Maximum = ts.TotalSeconds;
+                slideSeeker.SmallChange = 1;
+                slideSeeker.LargeChange = Math.Min(10, ts.TotalSeconds / 10);
+            });
+
+        }
+
+        private void MediaTimer_Tick(object sender, object e)
+        {
+            if (!isDragging)
+            {
+                slideSeeker.Value = CurrentPlayer.Position.TotalSeconds;
+                //currentTime = slideSeeker.Value;
+                TimeSpan ts = CurrentPlayer.Position;
+                TotalDuraton.Text = String.Format("{0}", CurrentPlayer.NaturalDuration.ToString(@"hh\:mm\:ss"));
+                StartDuraton.Text = string.Format("{1:D2}:{2:D2}", ts.Hours, ts.Minutes, ts.Seconds);
             }
         }
 
