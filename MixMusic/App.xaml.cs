@@ -1,29 +1,13 @@
 ﻿using BackgroundAudioShared.Services;
 using MixMusic.Common;
-using MixMusic.Facades;
-using MixMusic.Lifecycle;
-using MixMusic.Unity;
-using ServiceLocation;
+using MixMusic.Views;
 using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Runtime.InteropServices.WindowsRuntime;
-using System.Threading.Tasks;
 using Windows.ApplicationModel;
 using Windows.ApplicationModel.Activation;
 using Windows.ApplicationModel.Resources;
-using Windows.Foundation;
-using Windows.Foundation.Collections;
 using Windows.Globalization;
-using Windows.Storage;
 using Windows.UI.Popups;
 using Windows.UI.Xaml;
-using Windows.UI.Xaml.Controls;
-using Windows.UI.Xaml.Controls.Primitives;
-using Windows.UI.Xaml.Data;
-using Windows.UI.Xaml.Input;
-using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Navigation;
 
 namespace MixMusic
@@ -63,16 +47,12 @@ namespace MixMusic
             // just ensure that the window is active
             if (shell == null)
             {
-                //UnityBootstrapper.Init();
-                //UnityBootstrapper.ConfigureRegistries();
-
 
                 // Create a AppShell to act as the navigation context and navigate to the first page
                 shell = new Shell();
 
                 // Set the default language
                 shell.Language = ApplicationLanguages.Languages[0];
-
                 shell.AppFrame.NavigationFailed += OnNavigationFailed;
             }
 
@@ -97,8 +77,6 @@ namespace MixMusic
 
             // Place our app shell in the current Window
             Window.Current.Content = shell;
-
-            //GoldReceivedNotificationClickedHandler(args);
         }
 
         /// <summary>
@@ -228,7 +206,7 @@ namespace MixMusic
         {
             var deferral = e.SuspendingOperation.GetDeferral();
             //TODO: Save application state and stop any background activity
-            //await SuspensionManager.SaveAsync();
+            await SuspensionManager.SaveAsync();
             deferral.Complete();
         }
 

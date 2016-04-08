@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace MixMusic.ViewModels
 {
-    public class ProductionViewModel:ViewModelBase
+    public class ProductionViewModel
     {
         public ProductionViewModel()
         {
