@@ -398,7 +398,7 @@ namespace MixMusic.Views
         /// </summary>
         private void PrevButton_Click(object sender, RoutedEventArgs e)
         {
-            if(ListAllTracking.SelectedIndex!=-1 || ListAllTracking.SelectedIndex != 0)
+            if(ListAllTracking.SelectedIndex!=-1 && ListAllTracking.SelectedIndex != 0)
                 MessageService.SendMessageToBackground(new SkipPreviousMessage());
 
             // Prevent the user from repeatedly pressing the button and causing 
