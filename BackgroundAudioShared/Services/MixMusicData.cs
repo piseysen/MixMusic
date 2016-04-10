@@ -47,6 +47,7 @@ namespace BackgroundAudioShared.Services
             _musicListItems.ListItemNewSong.Clear();
             _mixMusicWebservice.RequestGetAsync(_serverUrls.GetNewMusic, (result) =>
             {
+                if (result == null) return;
                 var resultData = JsonConvert.DeserializeObject<MusicModel.RootObject>(result);
                 if (resultData != null)
                 {
@@ -68,6 +69,7 @@ namespace BackgroundAudioShared.Services
             _musicListItems.ListItemPopularMusic.Clear();
             _mixMusicWebservice.RequestGetAsync(_serverUrls.GetPopularMusic, (result) =>
             {
+                if (result == null) return;
                 var resultData = JsonConvert.DeserializeObject<MusicModel.RootObject>(result);
                 if (resultData != null)
                 {
@@ -90,6 +92,7 @@ namespace BackgroundAudioShared.Services
             Dictionary<string, string> values = new Dictionary<string, string>();
             _mixMusicWebservice.RequestPostAsync(_serverUrls.GetSinger, values,(result) =>
             {
+                if (result == null) return;
                 var resultData = JsonConvert.DeserializeObject<SingerModel.RootObject>(result);
                 if (resultData != null)
                 {
@@ -112,6 +115,7 @@ namespace BackgroundAudioShared.Services
             Dictionary<string, string> values = new Dictionary<string, string>();
             _mixMusicWebservice.RequestPostAsync(_serverUrls.GetProduction, values, (result) =>
             {
+                if (result == null) return;
                 var resultData = JsonConvert.DeserializeObject<ProductionModel.RootObject>(result);
                 if (resultData != null)
                 {

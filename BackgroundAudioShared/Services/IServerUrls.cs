@@ -12,6 +12,8 @@ namespace BackgroundAudioShared.Services
         Uri GetSinger { get; }
         Uri GetPopularMusic { get; }
         Uri GetProduction { get; }
+        Uri GetMusicBySingerId { get; }
+
 
     }
 }

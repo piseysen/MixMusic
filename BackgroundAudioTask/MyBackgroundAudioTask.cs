@@ -102,6 +102,7 @@ namespace BackgroundAudioTask
             smtc.IsPlayEnabled = true;
             smtc.IsNextEnabled = true;
             smtc.IsPreviousEnabled = true;
+            smtc.IsStopEnabled = true;
 
             // Read persisted state of foreground app
             var value = ApplicationSettingsHelper.ReadResetSettingsValue(ApplicationSettingsConstants.AppState);
@@ -204,10 +205,10 @@ namespace BackgroundAudioTask
             smtc.DisplayUpdater.MusicProperties.Title = item.Source.CustomProperties[TitleKey] as string;
 
             var albumArtUri =item.Source.CustomProperties[AlbumArtKey] as Uri;
-            if (albumArtUri != null)
-                smtc.DisplayUpdater.Thumbnail = RandomAccessStreamReference.CreateFromUri(albumArtUri);
-            else
-                smtc.DisplayUpdater.Thumbnail = null;
+            //if (albumArtUri != null)
+            //    smtc.DisplayUpdater.Thumbnail = RandomAccessStreamReference.CreateFromUri(albumArtUri);
+            //else
+            //    smtc.DisplayUpdater.Thumbnail = null;
 
             smtc.DisplayUpdater.Update();
         }
@@ -360,7 +361,7 @@ namespace BackgroundAudioTask
         {
             // Get the new item
             var item = args.NewItem;
-            //Debug.WriteLine("PlaybackList_CurrentItemChanged: " + (item == null ? "null" : GetTrackId(item).ToString()));
+            Debug.WriteLine("PlaybackList_CurrentItemChanged: " + (item == null ? "null" : GetTrackId(item).ToString()));
 
             // Update the system view
             UpdateUVCOnNewTrack(item);

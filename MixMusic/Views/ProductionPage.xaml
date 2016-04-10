@@ -59,6 +59,7 @@
             <GridView x:Name="ListProduction"                                  
                     ItemsSource="{x:Bind ProductionDataItems}"
                     FontStyle="Normal"  
+                    Margin="8,0,0,0"
                     SelectionMode="None"
                     IsItemClickEnabled="True"
                     IsSwipeEnabled="False"

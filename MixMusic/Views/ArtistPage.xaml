@@ -63,13 +63,15 @@
                     IsItemClickEnabled="True"
                     IsSwipeEnabled="False"
                     CanDragItems="False"
+                    Margin="8,0,0,0"
                     HorizontalAlignment="Stretch"
                     Background="Transparent" 
                     VerticalAlignment="Stretch"
                     ShowsScrollingPlaceholders="False"
                     ScrollViewer.HorizontalScrollMode="Auto"
                     ItemTemplate="{StaticResource ItemSingerTemplate}"
-                    BorderThickness="0">
+                    BorderThickness="0"
+                    ItemClick="ListStar_ItemClick">
             </GridView>
         </ScrollViewer>
 

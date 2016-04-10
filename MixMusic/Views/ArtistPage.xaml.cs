@@ -29,15 +29,17 @@ namespace MixMusic.Views
         {
             this.InitializeComponent();
             SingerDataItems = new ObservableCollection<SingerModel.Result>();
-            this.Loaded += ArtistPage_Loaded;
-            NavigationCacheMode = NavigationCacheMode.Required;
+            NavigationCacheMode = NavigationCacheMode.Enabled;
         }
 
-        private void ArtistPage_Loaded(object sender, RoutedEventArgs e)
+        protected override void OnNavigatedTo(NavigationEventArgs e)
         {
-            IMusicEvents imixmusic = new MixMusicData();
-            imixmusic.OnSingerLoaded += Imixmusic_OnSingerLoaded;
-            imixmusic.ConnectToSinger();
+            if (e.NavigationMode == NavigationMode.New)
+            {
+                IMusicEvents imixmusic = new MixMusicData();
+                imixmusic.OnSingerLoaded += Imixmusic_OnSingerLoaded;
+                imixmusic.ConnectToSinger();
+            }
         }
 
         private void Imixmusic_OnSingerLoaded(object sender, ItemListArgs e)
@@ -48,5 +50,16 @@ namespace MixMusic.Views
                 SingerDataItems.Add(item);
             }
         }
+
+        private void ListStar_ItemClick(object sender, ItemClickEventArgs e)
+        {
+            var item = e.ClickedItem as SingerModel.Result;
+            if (item != null)
+            {
+                Frame?.Navigate(typeof(ListMusicPage),item.id);
+            }
+        }
+
+
     }
 }

@@ -13,5 +13,6 @@ namespace MixMusic.Models
         public ObservableCollection<MusicModel.Result> SongCollection { get; set; }
         public string TrackId { get; set; }
         public string Position { get; set; }
+        public int TypeId { get; set; }
     }
 }

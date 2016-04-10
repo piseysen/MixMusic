@@ -27,25 +27,23 @@ namespace MixMusic.Views
     public sealed partial class ProductionPage : Page
     {
         public ObservableCollection<ProductionModel.Result> ProductionDataItems { get; private set; }
-        private readonly ProductionViewModel _viewModel;
 
         public ProductionPage()
         {
             this.InitializeComponent();
             ProductionDataItems = new ObservableCollection<ProductionModel.Result>();
 
-            this.Loaded += ProductionPage_Loaded;
             NavigationCacheMode = NavigationCacheMode.Required;
-
-            //_viewModel = ServiceLocator.Current.GetInstance<ProductionViewModel>();
-            //DataContext = _viewModel;
         }
 
-        private void ProductionPage_Loaded(object sender, RoutedEventArgs e)
+        protected override void OnNavigatedTo(NavigationEventArgs e)
         {
-            IMusicEvents imixmusic = new MixMusicData();
-            imixmusic.OnProductionLoaded += Imixmusic_OnProductionLoaded;
-            imixmusic.ConnectToProduction();
+            if (e.NavigationMode == NavigationMode.New)
+            {
+                IMusicEvents imixmusic = new MixMusicData();
+                imixmusic.OnProductionLoaded += Imixmusic_OnProductionLoaded;
+                imixmusic.ConnectToProduction();
+            }
         }
 
         private void Imixmusic_OnProductionLoaded(object sender, ItemListArgs e)

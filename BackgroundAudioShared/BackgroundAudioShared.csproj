@@ -130,6 +130,8 @@
     <Compile Include="Models\SingerModel.cs" />
     <Compile Include="Models\SongModel.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Services\GetMusicBySingerId.cs" />
+    <Compile Include="Services\IGetMusicBySingerId.cs" />
     <Compile Include="Services\IMusicEvents.cs" />
     <Compile Include="Services\IServerUrls.cs" />
     <Compile Include="Services\ItemListArgs.cs" />
