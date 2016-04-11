@@ -559,10 +559,10 @@
             </Grid.ColumnDefinitions>
 
             <StackPanel Orientation="Horizontal" Grid.Column="0">
-                <Image x:Name="imgThumbailSongs" Source="/Assets/Images/Icons/pop.jpg" Height="48" Width="50" VerticalAlignment="Center" HorizontalAlignment="Left" Margin="5,0"></Image>
+                <Image x:Name="imgThumbailSongs" Height="48" Width="50" VerticalAlignment="Center" HorizontalAlignment="Left" Margin="5,0"></Image>
                 <StackPanel VerticalAlignment="Center">
-                    <TextBlock x:Name="txtCurrentTrack" TextTrimming="CharacterEllipsis" Text="Hold me for a while" HorizontalAlignment="Left" Foreground="#333333" FontSize="13" Margin="5,0" FontWeight="SemiBold"/>
-                    <TextBlock x:Name="txtAlbum" Text="SD 199" HorizontalAlignment="Left" Foreground="#B9B9B9" FontSize="9" Margin="5,0"/>
+                    <TextBlock x:Name="txtCurrentTrack" TextTrimming="CharacterEllipsis" HorizontalAlignment="Left" Foreground="#333333" FontSize="13" Margin="5,0" FontWeight="SemiBold"/>
+                    <TextBlock x:Name="txtAlbum" HorizontalAlignment="Left" Foreground="#B9B9B9" FontSize="9" Margin="5,0"/>
                 </StackPanel>
             </StackPanel>
 
